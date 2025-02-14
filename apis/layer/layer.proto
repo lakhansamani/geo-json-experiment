@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package layer.v1;
+
+option go_package = "apis.layer";
+
+// Basic 3D point
+message Point {
+    double x = 1;
+    double y = 2;
+    double z = 3; // Added z-coordinate for 3D support
+}
+
+// Collection of points
+message MultiPoint {
+    repeated Point points = 1;
+}
+
+// Line defined by multiple points
+message LineString {
+    repeated Point points = 1;
+}
+
+// Multiple line segments
+message MultiLineString {
+    repeated LineString lines = 1;
+}
+
+// Polygon with outer and inner rings
+message Polygon {
+    repeated LineString rings = 1;
+}
+
+// Multiple polygons
+message MultiPolygon {
+    repeated Polygon polygons = 1;
+}
+
+// GeoJSON feature properties as a struct (flexible key-value storage)
+message Properties {
+    string key = 1;
+    string value = 2;
+}
+
+// GeoJSON Feature
+message Feature {
+    oneof geometry {
+      Point point = 1;
+      MultiPoint multi_point = 2;
+      LineString line_string = 3;
+      MultiLineString multi_line_string = 4;
+      Polygon polygon = 5;
+      MultiPolygon multi_polygon = 6;
+    }
+    repeated Properties properties = 7;
+}
+
+// GeoJSON FeatureCollection
+message FeatureCollection {
+    repeated Feature features = 1;
+}
