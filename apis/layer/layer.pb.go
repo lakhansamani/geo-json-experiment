@@ -9,6 +9,7 @@ package apis_layer
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 	reflect "reflect"
 	sync "sync"
 )
@@ -20,19 +21,19 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Basic 3D point
-type Point struct {
+// Message for GeoJSON Geometry
+type Geometry struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	X float64 `protobuf:"fixed64,1,opt,name=x,proto3" json:"x,omitempty"`
-	Y float64 `protobuf:"fixed64,2,opt,name=y,proto3" json:"y,omitempty"`
-	Z float64 `protobuf:"fixed64,3,opt,name=z,proto3" json:"z,omitempty"` // Added z-coordinate for 3D support
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	// Coordinates stored as nested arrays using google.protobuf.ListValue
+	Coordinates *structpb.ListValue `protobuf:"bytes,2,opt,name=coordinates,proto3" json:"coordinates,omitempty"`
 }
 
-func (x *Point) Reset() {
-	*x = Point{}
+func (x *Geometry) Reset() {
+	*x = Geometry{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_apis_layer_layer_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -40,13 +41,13 @@ func (x *Point) Reset() {
 	}
 }
 
-func (x *Point) String() string {
+func (x *Geometry) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Point) ProtoMessage() {}
+func (*Geometry) ProtoMessage() {}
 
-func (x *Point) ProtoReflect() protoreflect.Message {
+func (x *Geometry) ProtoReflect() protoreflect.Message {
 	mi := &file_apis_layer_layer_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -58,326 +59,23 @@ func (x *Point) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Point.ProtoReflect.Descriptor instead.
-func (*Point) Descriptor() ([]byte, []int) {
+// Deprecated: Use Geometry.ProtoReflect.Descriptor instead.
+func (*Geometry) Descriptor() ([]byte, []int) {
 	return file_apis_layer_layer_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Point) GetX() float64 {
+func (x *Geometry) GetType() string {
 	if x != nil {
-		return x.X
-	}
-	return 0
-}
-
-func (x *Point) GetY() float64 {
-	if x != nil {
-		return x.Y
-	}
-	return 0
-}
-
-func (x *Point) GetZ() float64 {
-	if x != nil {
-		return x.Z
-	}
-	return 0
-}
-
-// Collection of points
-type MultiPoint struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Points []*Point `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
-}
-
-func (x *MultiPoint) Reset() {
-	*x = MultiPoint{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apis_layer_layer_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MultiPoint) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MultiPoint) ProtoMessage() {}
-
-func (x *MultiPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_apis_layer_layer_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MultiPoint.ProtoReflect.Descriptor instead.
-func (*MultiPoint) Descriptor() ([]byte, []int) {
-	return file_apis_layer_layer_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *MultiPoint) GetPoints() []*Point {
-	if x != nil {
-		return x.Points
-	}
-	return nil
-}
-
-// Line defined by multiple points
-type LineString struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Points []*Point `protobuf:"bytes,1,rep,name=points,proto3" json:"points,omitempty"`
-}
-
-func (x *LineString) Reset() {
-	*x = LineString{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apis_layer_layer_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *LineString) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LineString) ProtoMessage() {}
-
-func (x *LineString) ProtoReflect() protoreflect.Message {
-	mi := &file_apis_layer_layer_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LineString.ProtoReflect.Descriptor instead.
-func (*LineString) Descriptor() ([]byte, []int) {
-	return file_apis_layer_layer_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *LineString) GetPoints() []*Point {
-	if x != nil {
-		return x.Points
-	}
-	return nil
-}
-
-// Multiple line segments
-type MultiLineString struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Lines []*LineString `protobuf:"bytes,1,rep,name=lines,proto3" json:"lines,omitempty"`
-}
-
-func (x *MultiLineString) Reset() {
-	*x = MultiLineString{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apis_layer_layer_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MultiLineString) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MultiLineString) ProtoMessage() {}
-
-func (x *MultiLineString) ProtoReflect() protoreflect.Message {
-	mi := &file_apis_layer_layer_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MultiLineString.ProtoReflect.Descriptor instead.
-func (*MultiLineString) Descriptor() ([]byte, []int) {
-	return file_apis_layer_layer_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *MultiLineString) GetLines() []*LineString {
-	if x != nil {
-		return x.Lines
-	}
-	return nil
-}
-
-// Polygon with outer and inner rings
-type Polygon struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Rings []*LineString `protobuf:"bytes,1,rep,name=rings,proto3" json:"rings,omitempty"`
-}
-
-func (x *Polygon) Reset() {
-	*x = Polygon{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apis_layer_layer_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Polygon) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Polygon) ProtoMessage() {}
-
-func (x *Polygon) ProtoReflect() protoreflect.Message {
-	mi := &file_apis_layer_layer_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Polygon.ProtoReflect.Descriptor instead.
-func (*Polygon) Descriptor() ([]byte, []int) {
-	return file_apis_layer_layer_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *Polygon) GetRings() []*LineString {
-	if x != nil {
-		return x.Rings
-	}
-	return nil
-}
-
-// Multiple polygons
-type MultiPolygon struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Polygons []*Polygon `protobuf:"bytes,1,rep,name=polygons,proto3" json:"polygons,omitempty"`
-}
-
-func (x *MultiPolygon) Reset() {
-	*x = MultiPolygon{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apis_layer_layer_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MultiPolygon) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MultiPolygon) ProtoMessage() {}
-
-func (x *MultiPolygon) ProtoReflect() protoreflect.Message {
-	mi := &file_apis_layer_layer_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MultiPolygon.ProtoReflect.Descriptor instead.
-func (*MultiPolygon) Descriptor() ([]byte, []int) {
-	return file_apis_layer_layer_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *MultiPolygon) GetPolygons() []*Polygon {
-	if x != nil {
-		return x.Polygons
-	}
-	return nil
-}
-
-// GeoJSON feature properties as a struct (flexible key-value storage)
-type Properties struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Key   string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	Value string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
-}
-
-func (x *Properties) Reset() {
-	*x = Properties{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apis_layer_layer_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Properties) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Properties) ProtoMessage() {}
-
-func (x *Properties) ProtoReflect() protoreflect.Message {
-	mi := &file_apis_layer_layer_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Properties.ProtoReflect.Descriptor instead.
-func (*Properties) Descriptor() ([]byte, []int) {
-	return file_apis_layer_layer_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *Properties) GetKey() string {
-	if x != nil {
-		return x.Key
+		return x.Type
 	}
 	return ""
 }
 
-func (x *Properties) GetValue() string {
+func (x *Geometry) GetCoordinates() *structpb.ListValue {
 	if x != nil {
-		return x.Value
+		return x.Coordinates
 	}
-	return ""
+	return nil
 }
 
 // GeoJSON Feature
@@ -386,22 +84,16 @@ type Feature struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Types that are assignable to Geometry:
-	//
-	//	*Feature_Point
-	//	*Feature_MultiPoint
-	//	*Feature_LineString
-	//	*Feature_MultiLineString
-	//	*Feature_Polygon
-	//	*Feature_MultiPolygon
-	Geometry   isFeature_Geometry `protobuf_oneof:"geometry"`
-	Properties []*Properties      `protobuf:"bytes,7,rep,name=properties,proto3" json:"properties,omitempty"`
+	Type       string           `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	Bbox       []float32        `protobuf:"fixed32,2,rep,packed,name=bbox,proto3" json:"bbox,omitempty"`
+	Geometry   *Geometry        `protobuf:"bytes,3,opt,name=geometry,proto3" json:"geometry,omitempty"`
+	Properties *structpb.Struct `protobuf:"bytes,4,opt,name=properties,proto3" json:"properties,omitempty"`
 }
 
 func (x *Feature) Reset() {
 	*x = Feature{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_apis_layer_layer_proto_msgTypes[7]
+		mi := &file_apis_layer_layer_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -414,7 +106,7 @@ func (x *Feature) String() string {
 func (*Feature) ProtoMessage() {}
 
 func (x *Feature) ProtoReflect() protoreflect.Message {
-	mi := &file_apis_layer_layer_proto_msgTypes[7]
+	mi := &file_apis_layer_layer_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -427,149 +119,33 @@ func (x *Feature) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Feature.ProtoReflect.Descriptor instead.
 func (*Feature) Descriptor() ([]byte, []int) {
-	return file_apis_layer_layer_proto_rawDescGZIP(), []int{7}
+	return file_apis_layer_layer_proto_rawDescGZIP(), []int{1}
 }
 
-func (m *Feature) GetGeometry() isFeature_Geometry {
-	if m != nil {
-		return m.Geometry
+func (x *Feature) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *Feature) GetBbox() []float32 {
+	if x != nil {
+		return x.Bbox
 	}
 	return nil
 }
 
-func (x *Feature) GetPoint() *Point {
-	if x, ok := x.GetGeometry().(*Feature_Point); ok {
-		return x.Point
+func (x *Feature) GetGeometry() *Geometry {
+	if x != nil {
+		return x.Geometry
 	}
 	return nil
 }
 
-func (x *Feature) GetMultiPoint() *MultiPoint {
-	if x, ok := x.GetGeometry().(*Feature_MultiPoint); ok {
-		return x.MultiPoint
-	}
-	return nil
-}
-
-func (x *Feature) GetLineString() *LineString {
-	if x, ok := x.GetGeometry().(*Feature_LineString); ok {
-		return x.LineString
-	}
-	return nil
-}
-
-func (x *Feature) GetMultiLineString() *MultiLineString {
-	if x, ok := x.GetGeometry().(*Feature_MultiLineString); ok {
-		return x.MultiLineString
-	}
-	return nil
-}
-
-func (x *Feature) GetPolygon() *Polygon {
-	if x, ok := x.GetGeometry().(*Feature_Polygon); ok {
-		return x.Polygon
-	}
-	return nil
-}
-
-func (x *Feature) GetMultiPolygon() *MultiPolygon {
-	if x, ok := x.GetGeometry().(*Feature_MultiPolygon); ok {
-		return x.MultiPolygon
-	}
-	return nil
-}
-
-func (x *Feature) GetProperties() []*Properties {
+func (x *Feature) GetProperties() *structpb.Struct {
 	if x != nil {
 		return x.Properties
-	}
-	return nil
-}
-
-type isFeature_Geometry interface {
-	isFeature_Geometry()
-}
-
-type Feature_Point struct {
-	Point *Point `protobuf:"bytes,1,opt,name=point,proto3,oneof"`
-}
-
-type Feature_MultiPoint struct {
-	MultiPoint *MultiPoint `protobuf:"bytes,2,opt,name=multi_point,json=multiPoint,proto3,oneof"`
-}
-
-type Feature_LineString struct {
-	LineString *LineString `protobuf:"bytes,3,opt,name=line_string,json=lineString,proto3,oneof"`
-}
-
-type Feature_MultiLineString struct {
-	MultiLineString *MultiLineString `protobuf:"bytes,4,opt,name=multi_line_string,json=multiLineString,proto3,oneof"`
-}
-
-type Feature_Polygon struct {
-	Polygon *Polygon `protobuf:"bytes,5,opt,name=polygon,proto3,oneof"`
-}
-
-type Feature_MultiPolygon struct {
-	MultiPolygon *MultiPolygon `protobuf:"bytes,6,opt,name=multi_polygon,json=multiPolygon,proto3,oneof"`
-}
-
-func (*Feature_Point) isFeature_Geometry() {}
-
-func (*Feature_MultiPoint) isFeature_Geometry() {}
-
-func (*Feature_LineString) isFeature_Geometry() {}
-
-func (*Feature_MultiLineString) isFeature_Geometry() {}
-
-func (*Feature_Polygon) isFeature_Geometry() {}
-
-func (*Feature_MultiPolygon) isFeature_Geometry() {}
-
-// GeoJSON FeatureCollection
-type FeatureCollection struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Features []*Feature `protobuf:"bytes,1,rep,name=features,proto3" json:"features,omitempty"`
-}
-
-func (x *FeatureCollection) Reset() {
-	*x = FeatureCollection{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apis_layer_layer_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *FeatureCollection) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FeatureCollection) ProtoMessage() {}
-
-func (x *FeatureCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_apis_layer_layer_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FeatureCollection.ProtoReflect.Descriptor instead.
-func (*FeatureCollection) Descriptor() ([]byte, []int) {
-	return file_apis_layer_layer_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *FeatureCollection) GetFeatures() []*Feature {
-	if x != nil {
-		return x.Features
 	}
 	return nil
 }
@@ -579,63 +155,26 @@ var File_apis_layer_layer_proto protoreflect.FileDescriptor
 var file_apis_layer_layer_proto_rawDesc = []byte{
 	0x0a, 0x16, 0x61, 0x70, 0x69, 0x73, 0x2f, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2f, 0x6c, 0x61, 0x79,
 	0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x08, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e,
-	0x76, 0x31, 0x22, 0x31, 0x0a, 0x05, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x0c, 0x0a, 0x01, 0x78,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x01, 0x52, 0x01, 0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x01, 0x52, 0x01, 0x79, 0x12, 0x0c, 0x0a, 0x01, 0x7a, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x01, 0x52, 0x01, 0x7a, 0x22, 0x35, 0x0a, 0x0a, 0x4d, 0x75, 0x6c, 0x74, 0x69, 0x50, 0x6f,
-	0x69, 0x6e, 0x74, 0x12, 0x27, 0x0a, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20,
-	0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x50,
-	0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x22, 0x35, 0x0a, 0x0a,
-	0x4c, 0x69, 0x6e, 0x65, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x12, 0x27, 0x0a, 0x06, 0x70, 0x6f,
-	0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x52, 0x06, 0x70, 0x6f, 0x69,
-	0x6e, 0x74, 0x73, 0x22, 0x3d, 0x0a, 0x0f, 0x4d, 0x75, 0x6c, 0x74, 0x69, 0x4c, 0x69, 0x6e, 0x65,
-	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x12, 0x2a, 0x0a, 0x05, 0x6c, 0x69, 0x6e, 0x65, 0x73, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31,
-	0x2e, 0x4c, 0x69, 0x6e, 0x65, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x05, 0x6c, 0x69, 0x6e,
-	0x65, 0x73, 0x22, 0x35, 0x0a, 0x07, 0x50, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x12, 0x2a, 0x0a,
-	0x05, 0x72, 0x69, 0x6e, 0x67, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x6e, 0x65, 0x53, 0x74, 0x72, 0x69,
-	0x6e, 0x67, 0x52, 0x05, 0x72, 0x69, 0x6e, 0x67, 0x73, 0x22, 0x3d, 0x0a, 0x0c, 0x4d, 0x75, 0x6c,
-	0x74, 0x69, 0x50, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x12, 0x2d, 0x0a, 0x08, 0x70, 0x6f, 0x6c,
-	0x79, 0x67, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x52, 0x08,
-	0x70, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x73, 0x22, 0x34, 0x0a, 0x0a, 0x50, 0x72, 0x6f, 0x70,
-	0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x9d,
-	0x03, 0x0a, 0x07, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x12, 0x27, 0x0a, 0x05, 0x70, 0x6f,
-	0x69, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x6c, 0x61, 0x79, 0x65,
-	0x72, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x48, 0x00, 0x52, 0x05, 0x70, 0x6f,
-	0x69, 0x6e, 0x74, 0x12, 0x37, 0x0a, 0x0b, 0x6d, 0x75, 0x6c, 0x74, 0x69, 0x5f, 0x70, 0x6f, 0x69,
-	0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x75, 0x6c, 0x74, 0x69, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x48, 0x00,
-	0x52, 0x0a, 0x6d, 0x75, 0x6c, 0x74, 0x69, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x37, 0x0a, 0x0b,
-	0x6c, 0x69, 0x6e, 0x65, 0x5f, 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x14, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x6e,
-	0x65, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x48, 0x00, 0x52, 0x0a, 0x6c, 0x69, 0x6e, 0x65, 0x53,
-	0x74, 0x72, 0x69, 0x6e, 0x67, 0x12, 0x47, 0x0a, 0x11, 0x6d, 0x75, 0x6c, 0x74, 0x69, 0x5f, 0x6c,
-	0x69, 0x6e, 0x65, 0x5f, 0x73, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x19, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x75, 0x6c, 0x74,
-	0x69, 0x4c, 0x69, 0x6e, 0x65, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x48, 0x00, 0x52, 0x0f, 0x6d,
-	0x75, 0x6c, 0x74, 0x69, 0x4c, 0x69, 0x6e, 0x65, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x12, 0x2d,
-	0x0a, 0x07, 0x70, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x11, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x6f, 0x6c, 0x79, 0x67,
-	0x6f, 0x6e, 0x48, 0x00, 0x52, 0x07, 0x70, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x12, 0x3d, 0x0a,
-	0x0d, 0x6d, 0x75, 0x6c, 0x74, 0x69, 0x5f, 0x70, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x18, 0x06,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x75, 0x6c, 0x74, 0x69, 0x50, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x48, 0x00, 0x52, 0x0c,
-	0x6d, 0x75, 0x6c, 0x74, 0x69, 0x50, 0x6f, 0x6c, 0x79, 0x67, 0x6f, 0x6e, 0x12, 0x34, 0x0a, 0x0a,
-	0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x14, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x72, 0x6f, 0x70,
-	0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69,
-	0x65, 0x73, 0x42, 0x0a, 0x0a, 0x08, 0x67, 0x65, 0x6f, 0x6d, 0x65, 0x74, 0x72, 0x79, 0x22, 0x42,
-	0x0a, 0x11, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x43, 0x6f, 0x6c, 0x6c, 0x65, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x2d, 0x0a, 0x08, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x73, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31,
-	0x2e, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x52, 0x08, 0x66, 0x65, 0x61, 0x74, 0x75, 0x72,
-	0x65, 0x73, 0x42, 0x0c, 0x5a, 0x0a, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x76, 0x31, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x22, 0x5c, 0x0a, 0x08, 0x47, 0x65, 0x6f, 0x6d, 0x65, 0x74, 0x72, 0x79, 0x12, 0x12, 0x0a, 0x04,
+	0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65,
+	0x12, 0x3c, 0x0a, 0x0b, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x56, 0x61, 0x6c, 0x75,
+	0x65, 0x52, 0x0b, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74, 0x65, 0x73, 0x22, 0x9a,
+	0x01, 0x0a, 0x07, 0x46, 0x65, 0x61, 0x74, 0x75, 0x72, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79,
+	0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x12,
+	0x0a, 0x04, 0x62, 0x62, 0x6f, 0x78, 0x18, 0x02, 0x20, 0x03, 0x28, 0x02, 0x52, 0x04, 0x62, 0x62,
+	0x6f, 0x78, 0x12, 0x2e, 0x0a, 0x08, 0x67, 0x65, 0x6f, 0x6d, 0x65, 0x74, 0x72, 0x79, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x76, 0x31, 0x2e,
+	0x47, 0x65, 0x6f, 0x6d, 0x65, 0x74, 0x72, 0x79, 0x52, 0x08, 0x67, 0x65, 0x6f, 0x6d, 0x65, 0x74,
+	0x72, 0x79, 0x12, 0x37, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65, 0x73,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52,
+	0x0a, 0x70, 0x72, 0x6f, 0x70, 0x65, 0x72, 0x74, 0x69, 0x65, 0x73, 0x42, 0x0c, 0x5a, 0x0a, 0x61,
+	0x70, 0x69, 0x73, 0x2e, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -650,37 +189,22 @@ func file_apis_layer_layer_proto_rawDescGZIP() []byte {
 	return file_apis_layer_layer_proto_rawDescData
 }
 
-var file_apis_layer_layer_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_apis_layer_layer_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_apis_layer_layer_proto_goTypes = []any{
-	(*Point)(nil),             // 0: layer.v1.Point
-	(*MultiPoint)(nil),        // 1: layer.v1.MultiPoint
-	(*LineString)(nil),        // 2: layer.v1.LineString
-	(*MultiLineString)(nil),   // 3: layer.v1.MultiLineString
-	(*Polygon)(nil),           // 4: layer.v1.Polygon
-	(*MultiPolygon)(nil),      // 5: layer.v1.MultiPolygon
-	(*Properties)(nil),        // 6: layer.v1.Properties
-	(*Feature)(nil),           // 7: layer.v1.Feature
-	(*FeatureCollection)(nil), // 8: layer.v1.FeatureCollection
+	(*Geometry)(nil),           // 0: layer.v1.Geometry
+	(*Feature)(nil),            // 1: layer.v1.Feature
+	(*structpb.ListValue)(nil), // 2: google.protobuf.ListValue
+	(*structpb.Struct)(nil),    // 3: google.protobuf.Struct
 }
 var file_apis_layer_layer_proto_depIdxs = []int32{
-	0,  // 0: layer.v1.MultiPoint.points:type_name -> layer.v1.Point
-	0,  // 1: layer.v1.LineString.points:type_name -> layer.v1.Point
-	2,  // 2: layer.v1.MultiLineString.lines:type_name -> layer.v1.LineString
-	2,  // 3: layer.v1.Polygon.rings:type_name -> layer.v1.LineString
-	4,  // 4: layer.v1.MultiPolygon.polygons:type_name -> layer.v1.Polygon
-	0,  // 5: layer.v1.Feature.point:type_name -> layer.v1.Point
-	1,  // 6: layer.v1.Feature.multi_point:type_name -> layer.v1.MultiPoint
-	2,  // 7: layer.v1.Feature.line_string:type_name -> layer.v1.LineString
-	3,  // 8: layer.v1.Feature.multi_line_string:type_name -> layer.v1.MultiLineString
-	4,  // 9: layer.v1.Feature.polygon:type_name -> layer.v1.Polygon
-	5,  // 10: layer.v1.Feature.multi_polygon:type_name -> layer.v1.MultiPolygon
-	6,  // 11: layer.v1.Feature.properties:type_name -> layer.v1.Properties
-	7,  // 12: layer.v1.FeatureCollection.features:type_name -> layer.v1.Feature
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	2, // 0: layer.v1.Geometry.coordinates:type_name -> google.protobuf.ListValue
+	0, // 1: layer.v1.Feature.geometry:type_name -> layer.v1.Geometry
+	3, // 2: layer.v1.Feature.properties:type_name -> google.protobuf.Struct
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_apis_layer_layer_proto_init() }
@@ -690,7 +214,7 @@ func file_apis_layer_layer_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_apis_layer_layer_proto_msgTypes[0].Exporter = func(v any, i int) any {
-			switch v := v.(*Point); i {
+			switch v := v.(*Geometry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -702,78 +226,6 @@ func file_apis_layer_layer_proto_init() {
 			}
 		}
 		file_apis_layer_layer_proto_msgTypes[1].Exporter = func(v any, i int) any {
-			switch v := v.(*MultiPoint); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_apis_layer_layer_proto_msgTypes[2].Exporter = func(v any, i int) any {
-			switch v := v.(*LineString); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_apis_layer_layer_proto_msgTypes[3].Exporter = func(v any, i int) any {
-			switch v := v.(*MultiLineString); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_apis_layer_layer_proto_msgTypes[4].Exporter = func(v any, i int) any {
-			switch v := v.(*Polygon); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_apis_layer_layer_proto_msgTypes[5].Exporter = func(v any, i int) any {
-			switch v := v.(*MultiPolygon); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_apis_layer_layer_proto_msgTypes[6].Exporter = func(v any, i int) any {
-			switch v := v.(*Properties); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_apis_layer_layer_proto_msgTypes[7].Exporter = func(v any, i int) any {
 			switch v := v.(*Feature); i {
 			case 0:
 				return &v.state
@@ -785,26 +237,6 @@ func file_apis_layer_layer_proto_init() {
 				return nil
 			}
 		}
-		file_apis_layer_layer_proto_msgTypes[8].Exporter = func(v any, i int) any {
-			switch v := v.(*FeatureCollection); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-	}
-	file_apis_layer_layer_proto_msgTypes[7].OneofWrappers = []any{
-		(*Feature_Point)(nil),
-		(*Feature_MultiPoint)(nil),
-		(*Feature_LineString)(nil),
-		(*Feature_MultiLineString)(nil),
-		(*Feature_Polygon)(nil),
-		(*Feature_MultiPolygon)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -812,7 +244,7 @@ func file_apis_layer_layer_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_apis_layer_layer_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
