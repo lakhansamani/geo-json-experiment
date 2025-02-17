@@ -10,7 +10,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/google/uuid" // WKB encoding/decoding
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
